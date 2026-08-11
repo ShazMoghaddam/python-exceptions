@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Exceptions, Decoded</title>
+<meta name="description" content="A searchable field guide to Python built-in exceptions, grouped by cause, with what triggers each one and how to fix it.">
+<link rel="canonical" href="https://shazmoghaddam.github.io/python-exceptions/">
+<meta property="og:title" content="Python Exceptions, Decoded">
+<meta property="og:description" content="A searchable field guide to 42+ Python exceptions, from TypeError and KeyError to the file and OS errors. What triggers each and how to fix it.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://shazmoghaddam.github.io/python-exceptions/">
+<meta property="og:image" content="https://shazmoghaddam.github.io/python-exceptions/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HTTP Status Codes, Decoded">
+<meta name="twitter:description" content="A searchable field guide to every HTTP status code, grouped by class with a plain-English gloss on each one.">
+<meta name="twitter:image" content="https://shazmoghaddam.github.io/python-exceptions/preview.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Newsreader:ital,opsz,wght@1,6..72,400;0,6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFEFE9;
+    --paper-2:#F6F6F1;
+    --ink:#17181C;
+    --ink-soft:#4A4C54;
+    --ink-faint:#83868F;
+    --line:#D9D9D0;
+    --line-2:#E6E6DE;
+    --accent:#4338E8;
+    --accent-soft:#EDECFB;
+    --shadow:0 1px 0 rgba(23,24,28,.04), 0 8px 24px -18px rgba(23,24,28,.35);
+    --r:14px;
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Space Grotesk",system-ui,sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  a{color:inherit}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+  /* ---------- HERO ---------- */
+  header{
+    padding:64px 0 30px;
+    border-bottom:1px solid var(--line);
+    background:
+      radial-gradient(120% 90% at 100% 0%, rgba(67,56,232,.06), transparent 60%),
+      var(--paper);
+  }
+  .eyebrow{
+    font-family:"Space Mono",monospace;
+    font-size:12px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin:0 0 18px;
+  }
+  h1{
+    font-weight:700;
+    font-size:clamp(2.6rem,7vw,5rem);
+    line-height:.98;
+    letter-spacing:-.03em;
+    margin:0;
+  }
+  h1 .slash{color:var(--accent)}
+  .lede{
+    max-width:52ch;
+    margin:22px 0 0;
+    font-size:clamp(1rem,2.2vw,1.18rem);
+    color:var(--ink-soft);
+    line-height:1.55;
+  }
+  .lede-count{color:var(--ink);font-weight:600;white-space:nowrap}
+
+  /* decoder demo */
+  .decoder{
+    margin-top:30px;
+    display:inline-flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+    padding:14px 18px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:999px;
+    box-shadow:var(--shadow);
+    min-height:58px;
+  }
+  .decoder .tok{
+    font-family:"Space Mono",monospace;
+    font-weight:700;
+    font-size:1.05rem;
+    letter-spacing:.02em;
+    background:var(--ink);
+    color:var(--paper-2);
+    padding:6px 12px;
+    border-radius:8px;
+    white-space:nowrap;
+  }
+  .decoder .arrow{color:var(--accent);font-weight:700}
+  .decoder .exp{
+    font-family:"Newsreader",Georgia,serif;
+    font-style:italic;
+    font-size:1.12rem;
+    color:var(--ink);
+  }
+  .decoder.swap .tok,.decoder.swap .exp{opacity:0}
+  .decoder .tok,.decoder .exp{transition:opacity .28s ease}
+
+  /* ---------- CONTROLS ---------- */
+  .controls{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    padding:16px 0;
+  }
+  .search{
+    position:relative;
+    display:flex;
+    align-items:center;
+  }
+  .search svg{position:absolute;left:16px;width:18px;height:18px;stroke:var(--ink-faint);pointer-events:none}
+  #q{
+    width:100%;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:1rem;
+    color:var(--ink);
+    padding:14px 16px 14px 44px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    outline:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  #q::placeholder{color:var(--ink-faint)}
+  #q:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:12px;
+  }
+  .chip{
+    flex:0 0 auto;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:.86rem;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:7px 14px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    white-space:nowrap;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .chip .cdot{width:8px;height:8px;border-radius:50%;background:var(--c,var(--accent))}
+  .chip .star{width:12px;height:12px;fill:var(--accent);flex:0 0 auto}
+  .chip[aria-pressed="true"] .star{fill:currentColor}
+  .chip:hover{border-color:var(--ink-faint)}
+  .chip[aria-pressed="true"]{
+    background:var(--ink);
+    color:var(--paper-2);
+    border-color:var(--ink);
+  }
+  .chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* ---------- SECTIONS ---------- */
+  main{padding:14px 0 40px}
+  .count{
+    font-family:"Space Mono",monospace;
+    font-size:12.5px;
+    letter-spacing:.02em;
+    color:var(--ink-faint);
+    padding:20px 0 4px;
+  }
+  .cat{padding:26px 0 6px;scroll-margin-top:150px}
+  .cat-head{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    margin:0 0 18px;
+    padding-bottom:12px;
+    border-bottom:1px solid var(--line-2);
+  }
+  .cat-head .dot{width:11px;height:11px;border-radius:50%;background:var(--c);transform:translateY(1px)}
+  .cat-head h2{
+    font-size:clamp(1.25rem,3vw,1.6rem);
+    font-weight:600;
+    letter-spacing:-.02em;
+    margin:0;
+  }
+  .cat-head .n{
+    font-family:"Space Mono",monospace;
+    font-size:12px;
+    color:var(--ink-faint);
+    margin-left:auto;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(288px,1fr));
+    gap:10px;
+  }
+  .entry{
+    background:var(--paper-2);
+    border:1px solid var(--line-2);
+    border-radius:var(--r);
+    padding:15px 16px 16px;
+    transition:border-color .15s, transform .15s, box-shadow .15s;
+  }
+  .entry:hover{
+    border-color:color-mix(in srgb,var(--c) 55%, var(--line));
+    box-shadow:var(--shadow);
+    transform:translateY(-1px);
+  }
+  .entry .term{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin-bottom:8px;
+  }
+  .entry .cdot{width:7px;height:7px;border-radius:50%;background:var(--c);flex:0 0 auto}
+  .entry .ac{
+    font-family:"Space Mono",monospace;
+    font-weight:700;
+    font-size:1.02rem;
+    letter-spacing:.01em;
+    color:var(--ink);
+    word-break:break-word;
+  }
+  .entry .mean{
+    font-weight:500;
+    font-size:.95rem;
+    color:var(--ink);
+    margin:0 0 4px;
+  }
+  .entry .exp{
+    font-family:"Newsreader",Georgia,serif;
+    font-style:italic;
+    font-size:.98rem;
+    line-height:1.4;
+    color:var(--ink-soft);
+    margin:0;
+  }
+  mark{background:var(--accent-soft);color:var(--accent);border-radius:3px;padding:0 1px}
+
+  .noresults{
+    display:none;
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-faint);
+  }
+  .noresults .big{font-family:"Space Mono",monospace;font-size:1.1rem;color:var(--ink-soft);margin-bottom:6px}
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:34px 0 46px;
+    margin-top:20px;
+  }
+  .foot{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+  .foot .by{font-size:.95rem;color:var(--ink-soft)}
+  .foot .by b{color:var(--ink);font-weight:600}
+  .foot nav{display:flex;gap:8px;flex-wrap:wrap}
+  .foot a{
+    font-family:"Space Mono",monospace;
+    font-size:.8rem;
+    text-decoration:none;
+    color:var(--ink-soft);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:7px 13px;
+    transition:border-color .15s,color .15s;
+  }
+  .foot a:hover{color:var(--accent);border-color:var(--accent)}
+
+  /* keyboard hint in search */
+  .kbd{
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    font-family:"Space Mono",monospace;
+    font-size:12px;
+    color:var(--ink-faint);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:2px 7px;
+    background:var(--paper);
+    pointer-events:none;
+    transition:opacity .15s;
+  }
+  #q:focus ~ .kbd{opacity:0}
+
+  /* back to top */
+  .totop{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--ink);
+    color:var(--paper-2);
+    display:grid;
+    place-items:center;
+    cursor:pointer;
+    opacity:0;
+    transform:translateY(10px);
+    pointer-events:none;
+    transition:opacity .2s, transform .2s;
+    box-shadow:var(--shadow);
+    z-index:40;
+  }
+  .totop.show{opacity:1;transform:none;pointer-events:auto}
+  .totop:hover{background:var(--accent)}
+  .totop svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .totop:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  @media (max-width:560px){.kbd{display:none}}
+
+  /* hero action buttons */
+  .actions{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+  .btn{
+    font-family:"Space Grotesk",sans-serif;
+    font-size:.92rem;font-weight:500;
+    display:inline-flex;align-items:center;gap:8px;
+    cursor:pointer;
+    padding:11px 16px;border-radius:10px;
+    border:1px solid var(--line);
+    background:var(--paper-2);color:var(--ink);
+    transition:border-color .15s,background .15s,color .15s;
+  }
+  .btn:hover{border-color:var(--ink-faint)}
+  .btn.primary{background:var(--ink);color:var(--paper-2);border-color:var(--ink)}
+  .btn.primary:hover{background:var(--accent);border-color:var(--accent)}
+  .btn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* copied toast */
+  .toast{
+    position:fixed;left:50%;bottom:26px;
+    transform:translate(-50%,20px);
+    background:var(--ink);color:var(--paper-2);
+    font-family:"Space Mono",monospace;font-size:.82rem;
+    padding:10px 16px;border-radius:999px;
+    opacity:0;pointer-events:none;
+    transition:opacity .2s,transform .2s;z-index:60;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* print / save-as-PDF layout */
+  @media print{
+    .controls,.totop,.actions,.toast,.decoder,.eyebrow{display:none!important}
+    header{border:none;padding:8px 0 10px;background:none}
+    h1{font-size:2.4rem}
+    .cat{padding:14px 0 2px}
+    .grid{grid-template-columns:repeat(2,1fr);gap:6px}
+    .entry{break-inside:avoid;border:1px solid #ddd;box-shadow:none;background:none;padding:8px 10px}
+    .entry:hover{transform:none;box-shadow:none}
+    body{background:#fff}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+
+  @media (max-width:560px){
+    header{padding:44px 0 24px}
+    .decoder{width:100%;border-radius:14px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+  }
+</style>
+<style>
+  /* Header names are long; size the term down and break on hyphens cleanly */
+  .entry .ac{ font-size:.92rem; line-height:1.28; overflow-wrap:anywhere; }
+  .decoder .tok{ font-size:1.05rem; }
+  .chips .chip{ white-space:nowrap; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">A field guide</p>
+    <h1>Python exceptions,<br>decoded<span class="slash">.</span></h1>
+    <p class="lede">The errors Python raises when something goes wrong, gathered in one place: <strong class="lede-count" id="heroCount">42 exceptions across 7 classes</strong>, each with what triggers it and the usual fix. Search it, skim it, bookmark it.</p>
+    <div class="decoder" id="decoder" aria-live="polite">
+      <span class="tok" id="dTok">KeyError</span>
+      <span class="arrow">&#8594;</span>
+      <span class="exp" id="dExp">that dict key is not there</span>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="shareBtn" type="button">
+        <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+        Share
+      </button>
+      <button class="btn" id="pdfBtn" type="button">
+        <svg viewBox="0 0 24 24"><path d="M12 3v12M8 11l4 4 4-4M4 19h16"/></svg>
+        Save as PDF
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="wrap">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="search" placeholder="Search exceptions &#8212; try 'KeyError', 'import', 'index'&#8230;" autocomplete="off" aria-label="Search Python exceptions">
+      <span class="kbd" aria-hidden="true">/</span>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+    <p class="count" id="count"></p>
+    <div id="sections"></div>
+    <div class="noresults" id="noresults">
+      <div class="big">No matches</div>
+      <div>Nothing here for that one. Try a shorter word, a code number, or a different class.</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div class="by">Compiled by <b>Shaz Moghaddam</b> &#183; Data Scientist &amp; Python Developer, London</div>
+    <nav>
+      <a href="https://shazmoghaddam.github.io" target="_blank" rel="noopener">Portfolio</a>
+      <a href="https://linkedin.com/in/shazmoghaddam" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/ShazMoghaddam" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite">Link copied</div>
+
+<button class="totop" id="totop" aria-label="Back to top" title="Back to top">
+  <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script>
+const DATA = [
+  { id:"syntax", name:"Syntax & indentation", short:"Syntax", c:"#DC2626", items:[
+    ["SyntaxError","Invalid Python","Python could not parse your code, often a missing colon, bracket or quote. The caret in the traceback points near where parsing broke"],
+    ["IndentationError","Bad indentation","Your indentation does not line up, for example a block that expected an indented line got none. Make the spacing consistent"],
+    ["TabError","Tabs vs spaces","You mixed tabs and spaces for indentation in a way Python will not accept. Pick one, spaces are the convention"],
+  ]},
+  { id:"name", name:"Name & attribute", short:"Name", c:"#D97706", items:[
+    ["NameError","Undefined name","You used a name that does not exist yet, often a typo or a variable used before assignment. Check the spelling and the order"],
+    ["UnboundLocalError","Local used too early","You read a local before assigning it, usually because assigning to it later in the function made it local. Use global or nonlocal, or assign first"],
+    ["AttributeError","No such attribute","You accessed an attribute or method the object does not have, often a None where you expected an object. Check the type"],
+  ]},
+  { id:"type", name:"Type & value", short:"Type", c:"#2563EB", items:[
+    ["TypeError","Wrong type","You used a value of the wrong type for the operation, like adding a string to an int, or called something that is not callable. Convert or check the type"],
+    ["ValueError","Right type, wrong value","The type is fine but the value is not allowed, like int('abc') or unpacking the wrong number of items. Validate the input"],
+    ["AssertionError","Assertion failed","An assert statement evaluated to False. The condition you claimed was true was not, so check the assumption"],
+    ["UnicodeDecodeError","Cannot decode bytes","Bytes could not be decoded with the given encoding, common when reading a non-utf-8 file as utf-8. Pass the right encoding or errors='replace'"],
+    ["UnicodeEncodeError","Cannot encode text","A character could not be encoded into the target encoding, often non-ascii into ascii. Encode as utf-8 or handle the errors argument"],
+  ]},
+  { id:"lookup", name:"Lookup & index", short:"Lookup", c:"#7C3AED", items:[
+    ["IndexError","Index out of range","You indexed a sequence past its end, like lst[5] on a three-item list. Check len() or your loop bounds"],
+    ["KeyError","Missing dict key","You looked up a key that is not in the dict. Test with 'in', use .get() for a default, or reach for a defaultdict"],
+    ["LookupError","Base of index/key","The base class for IndexError and KeyError. You will usually see one of those two rather than this directly"],
+  ]},
+  { id:"arithmetic", name:"Arithmetic", short:"Arithmetic", c:"#0891B2", items:[
+    ["ZeroDivisionError","Divided by zero","You divided or took a modulo by zero. Guard the denominator, or handle the zero case before dividing"],
+    ["OverflowError","Number too big","A result grew too large for its type, mostly with floats since ints are unbounded. Rescale or use a wider type"],
+    ["FloatingPointError","Float op failed","A floating-point operation failed. Rare, only raised when float exceptions are explicitly enabled"],
+    ["ArithmeticError","Base of math errors","The base class for ZeroDivisionError, OverflowError and FloatingPointError. Catch it to cover all three"],
+  ]},
+  { id:"io", name:"Import, file & OS", short:"Import & OS", c:"#16A34A", items:[
+    ["ImportError","Import failed","An import could not complete, for example a name that is not in the module you imported from. Check the name and the package"],
+    ["ModuleNotFoundError","Module not installed","Python could not find the module at all, usually not installed or not on the path. pip install it or fix the import path"],
+    ["FileNotFoundError","No such file","The file or directory you opened does not exist at that path. Check the path and the working directory"],
+    ["FileExistsError","File already there","You tried to create something that already exists, like os.mkdir on an existing folder. Check first or pass exist_ok=True"],
+    ["PermissionError","Access denied","The OS refused the operation for permission reasons. Check the file permissions or run with the right access"],
+    ["IsADirectoryError","It is a directory","You treated a directory as a file, like open() on a folder. Point at an actual file"],
+    ["NotADirectoryError","It is not a directory","You treated a file as if it were a directory. Check the path really is a folder"],
+    ["TimeoutError","Operation timed out","A system-level operation, often a socket, ran past its timeout. Increase the timeout or handle the retry"],
+    ["ConnectionError","Connection problem","The base for network failures like reset, refused or aborted. Handle the specific subclass or retry"],
+    ["OSError","OS call failed","The general system-call error and the base for the file and OS ones above. Read the errno for the specifics"],
+    ["IOError","Alias of OSError","An old alias, IOError is just OSError now. You can catch either, they are the same class"],
+  ]},
+  { id:"runtime", name:"Runtime, iteration & system", short:"Runtime", c:"#DB2777", items:[
+    ["RuntimeError","Generic runtime error","A catch-all for errors that do not fit another category. Read the message, it usually explains the specific problem"],
+    ["RecursionError","Too much recursion","You hit the recursion depth limit, usually a base case that never triggers. Fix the base case or go iterative"],
+    ["NotImplementedError","Not implemented yet","Raised on purpose to mark a method a subclass must implement, or a stub. Implement or override it"],
+    ["StopIteration","Iterator exhausted","An iterator has no more items. next() raises it, and for-loops catch it for you, so you rarely handle it yourself"],
+    ["StopAsyncIteration","Async iterator done","The async version of StopIteration, signalling an async iterator is finished. async for handles it for you"],
+    ["GeneratorExit","Generator closing","Raised inside a generator when it is closed. Let it propagate rather than swallowing it, so cleanup runs"],
+    ["KeyboardInterrupt","Ctrl-C pressed","The user interrupted the program, usually with Ctrl-C. Catch it only to clean up, then re-raise or exit"],
+    ["SystemExit","Program exiting","Raised by sys.exit() to end the program. It inherits from BaseException so a bare except will not stop it by accident"],
+    ["MemoryError","Out of memory","The program ran out of memory. Process data in chunks, free references, or use a leaner data structure"],
+    ["EOFError","End of input","input() hit end-of-file with no data, for example a closed stdin. Handle the empty case"],
+    ["Exception","Base of most errors","The base class for all normal errors. Catch it to handle anything short of exit signals, but be specific when you can"],
+    ["BaseException","Root of everything","The root of the whole hierarchy, including exit signals. Do not catch this directly, catch Exception instead"],
+    ["ExceptionGroup","Bundle of errors","Wraps several exceptions raised together, added in Python 3.11. Handle its parts with the except* syntax"],
+  ]},
+];
+
+const $ = s => document.querySelector(s);
+const sectionsEl = $("#sections");
+const countEl = $("#count");
+const noresults = $("#noresults");
+let activeCat = "all";
+let query = "";
+
+// total
+const TOTAL = DATA.reduce((n,c)=>n+c.items.length,0);
+$("#q").placeholder = `Search ${TOTAL} exceptions \u2014 try 'KeyError', 'import', 'index'\u2026`;
+const heroCount = $("#heroCount");
+if(heroCount) heroCount.textContent = `${TOTAL} exceptions across ${DATA.length} classes`;
+
+// build chips
+const chips = $("#chips");
+const allChip = document.createElement("button");
+allChip.className="chip"; allChip.textContent="All"; allChip.dataset.cat="all";
+allChip.setAttribute("aria-pressed","true");
+chips.appendChild(allChip);
+const ivChip=document.createElement("button");
+ivChip.className="chip chip-star"; ivChip.dataset.cat="essentials";
+ivChip.setAttribute("aria-pressed","false");
+ivChip.innerHTML=`<svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.7 1.4 6.8L12 17.8 5.9 20.5l1.4-6.8L2.2 9l6.9-.7z"/></svg>Most common`;
+chips.appendChild(ivChip);
+DATA.forEach(cat=>{
+  const b=document.createElement("button");
+  b.className="chip"; b.dataset.cat=cat.id; b.style.setProperty("--c",cat.c);
+  b.setAttribute("aria-pressed","false");
+  b.innerHTML=`<span class="cdot"></span>${cat.short || cat.name}`;
+  chips.appendChild(b);
+});
+
+function escapeHtml(s){return s.replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]));}
+function escapeRx(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");}
+function highlight(text,q){
+  const e=escapeHtml(text);
+  if(!q) return e;
+  try{ return e.replace(new RegExp("("+escapeRx(q)+")","ig"),"<mark>$1</mark>"); }
+  catch(_){ return e; }
+}
+
+// build sections
+const SECTIONS = DATA.map(cat=>{
+  const sec=document.createElement("section");
+  sec.className="cat"; sec.id="sec-"+cat.id; sec.style.setProperty("--c",cat.c);
+  sec.dataset.cat=cat.id;
+  const head=document.createElement("div");
+  head.className="cat-head";
+  head.innerHTML=`<span class="dot"></span><h2>${escapeHtml(cat.name)}</h2><span class="n">${cat.items.length}</span>`;
+  const nEl=head.querySelector(".n");
+  const grid=document.createElement("div");
+  grid.className="grid";
+  const entries=cat.items.map(([ac,mean,exp])=>{
+    const el=document.createElement("article");
+    el.className="entry";
+    el.innerHTML=`<div class="term"><span class="cdot"></span><span class="ac"></span></div><p class="mean"></p><p class="exp"></p>`;
+    const acEl=el.querySelector(".ac"), meanEl=el.querySelector(".mean"), expEl=el.querySelector(".exp");
+    acEl.textContent=ac; meanEl.textContent=mean; expEl.textContent=exp;
+    grid.appendChild(el);
+    return {el, ac, mean, exp, blob:(ac+" "+mean+" "+exp).toLowerCase(), acEl, meanEl, expEl, hot:false};
+  });
+  sec.appendChild(head); sec.appendChild(grid);
+  sectionsEl.appendChild(sec);
+  return {catId:cat.id, sec, nEl, entries};
+});
+
+// filtering + highlighting
+function apply(){
+  const q=query.trim().toLowerCase();
+  let shown=0;
+  const essMode = activeCat==="essentials";
+  SECTIONS.forEach(s=>{
+    let vis=0;
+    s.entries.forEach(en=>{
+      let inScope;
+      if(essMode){
+        inScope = ESSENTIALS.has(en.ac);
+      } else {
+        inScope = activeCat==="all" || activeCat===s.catId;
+      }
+      const match = inScope && (q==="" || en.blob.includes(q));
+      en.el.style.display = match ? "" : "none";
+      if(match){ vis++; shown++; }
+      if(q && match){
+        en.acEl.innerHTML=highlight(en.ac,q);
+        en.meanEl.innerHTML=highlight(en.mean,q);
+        en.expEl.innerHTML=highlight(en.exp,q);
+        en.hot=true;
+      } else if(en.hot && !q){
+        en.acEl.textContent=en.ac;
+        en.meanEl.textContent=en.mean;
+        en.expEl.textContent=en.exp;
+        en.hot=false;
+      }
+    });
+    s.sec.style.display = vis ? "" : "none";
+    s.nEl.textContent = vis;
+  });
+  noresults.style.display = shown ? "none" : "block";
+  const filtering = q || activeCat!=="all";
+  countEl.textContent = filtering ? `Showing ${shown} of ${TOTAL} exceptions` : "";
+  countEl.style.display = filtering ? "" : "none";
+}
+
+const qEl=$("#q");
+qEl.addEventListener("input",e=>{query=e.target.value;apply();});
+
+// category selection with shareable URL hash (e.g. #client)
+const CAT_IDS = DATA.map(d=>d.id);
+const ESSENTIALS = new Set(["SyntaxError", "IndentationError", "NameError", "AttributeError", "TypeError", "ValueError", "IndexError", "KeyError", "ZeroDivisionError", "ImportError", "ModuleNotFoundError", "FileNotFoundError", "RecursionError", "StopIteration", "UnicodeDecodeError"]);
+function selectCat(catId, scroll){
+  activeCat = (catId==="essentials" || CAT_IDS.includes(catId)) ? catId : "all";
+  chips.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed", c.dataset.cat===activeCat?"true":"false"));
+  apply();
+  if(scroll){
+    window.scrollTo({top: document.querySelector(".controls").offsetTop-1, behavior:"smooth"});
+  }
+}
+chips.addEventListener("click",e=>{
+  const btn=e.target.closest(".chip"); if(!btn) return;
+  const cat=btn.dataset.cat;
+  selectCat(cat, true);
+  try{ history.replaceState(null,"", cat==="all" ? location.pathname+location.search : "#"+cat); }catch(_){}
+});
+window.addEventListener("hashchange",()=>selectCat(location.hash.slice(1)||"all", false));
+try{ selectCat(location.hash.slice(1)||"all", false); }catch(_){ selectCat("all", false); }
+
+// keyboard: "/" focuses search, Esc clears it
+document.addEventListener("keydown",e=>{
+  const typing=/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+  if(e.key==="/" && !typing){ e.preventDefault(); qEl.focus(); }
+  else if(e.key==="Escape" && document.activeElement===qEl){ qEl.value=""; query=""; apply(); qEl.blur(); }
+});
+
+// back to top
+const totop=$("#totop");
+window.addEventListener("scroll",()=>totop.classList.toggle("show", window.scrollY>600),{passive:true});
+totop.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
+
+// share + save as PDF
+const toast=$("#toast");
+let toastT;
+function flash(msg){ toast.textContent=msg; toast.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>toast.classList.remove("show"),1800); }
+$("#shareBtn").addEventListener("click",async()=>{
+  const data={title:"HTTP Status Codes, Decoded", text:"A searchable field guide to every HTTP status code.", url:location.href};
+  if(navigator.share){ try{ await navigator.share(data); }catch(_){} return; }
+  try{ await navigator.clipboard.writeText(location.href); flash("Link copied"); }
+  catch(_){ window.open("https://www.linkedin.com/sharing/share-offsite/?url="+encodeURIComponent(location.href),"_blank","noopener"); }
+});
+function resetForFullView(){ if(query||activeCat!=="all"){ qEl.value=""; query=""; selectCat("all",false); } }
+$("#pdfBtn").addEventListener("click",()=>{ resetForFullView(); window.print(); });
+window.addEventListener("beforeprint",resetForFullView);
+
+// hero decoder cycle
+const demo=[
+  ["IndexError","list index out of range"],
+  ["TypeError","wrong type for the operation"],
+  ["NameError","that name is not defined"],
+  ["ZeroDivisionError","you divided by zero"],
+  ["ModuleNotFoundError","that module is not installed"],
+  ["IndentationError","your indentation is off"],
+  ["AttributeError","that object has no such attribute"]
+];
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+if(!reduce){
+  const dec=$("#decoder"), tok=$("#dTok"), exp=$("#dExp");
+  let i=0;
+  setInterval(()=>{
+    dec.classList.add("swap");
+    setTimeout(()=>{
+      i=(i+1)%demo.length;
+      tok.textContent=demo[i][0];
+      exp.textContent=demo[i][1];
+      dec.classList.remove("swap");
+    },300);
+  },2800);
+}
+</script>
+</body>
+</html>
